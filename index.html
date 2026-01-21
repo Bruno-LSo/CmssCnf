@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONFEA - Composições</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0f1a; --bg-secondary: #111827; --bg-tertiary: #1f2937; --bg-card: #161e2e;
+            --text-primary: #f3f4f6; --text-secondary: #9ca3af; --text-muted: #6b7280;
+            --accent-blue: #3b82f6; --accent-blue-hover: #2563eb; --accent-green: #10b981;
+            --accent-yellow: #f59e0b; --accent-red: #ef4444; --accent-purple: #8b5cf6;
+            --border-color: #374151; --radius: 12px; --radius-sm: 8px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+        .hidden { display: none !important; }
+        
+        /* Login */
+        .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .login-container { width: 100%; max-width: 400px; }
+        .login-header { text-align: center; margin-bottom: 2rem; }
+        .login-logo { width: 72px; height: 72px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 1.8rem; font-weight: 700; color: white; }
+        .login-title { font-size: 1.5rem; font-weight: 700; }
+        .login-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 2rem; }
+        
+        /* Forms */
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: var(--text-secondary); }
+        .form-control { width: 100%; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.95rem; }
+        .form-control:focus { outline: none; border-color: var(--accent-blue); }
+        
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 500; cursor: pointer; border: none; font-family: inherit; font-size: 0.9rem; transition: all 0.2s; }
+        .btn-primary { background: var(--accent-blue); color: white; }
+        .btn-primary:hover { background: var(--accent-blue-hover); }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-danger { background: var(--accent-red); color: white; }
+        .btn-success { background: var(--accent-green); color: white; }
+        .btn-sm { padding: 8px 12px; font-size: 0.85rem; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        /* Alert */
+        .alert { padding: 12px; border-radius: var(--radius-sm); margin-bottom: 1rem; font-size: 0.9rem; }
+        .alert-error { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+        .alert-warning { background: rgba(245,158,11,0.15); color: var(--accent-yellow); }
+        
+        /* Navbar */
+        .navbar { background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 0 2rem; position: sticky; top: 0; z-index: 100; }
+        .navbar-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 1rem; }
+        .navbar-brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .navbar-logo { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; }
+        .navbar-title { font-weight: 600; }
+        .navbar-nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .nav-link { padding: 8px 16px; border-radius: var(--radius-sm); color: var(--text-secondary); cursor: pointer; background: none; border: none; font-family: inherit; font-size: 0.9rem; white-space: nowrap; }
+        .nav-link:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+        .nav-link.active { background: var(--accent-blue); color: white; }
+        .navbar-user { display: flex; align-items: center; gap: 12px; }
+        .user-name { font-size: 0.9rem; }
+        .btn-logout { background: none; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 6px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.85rem; }
+        .refresh-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-secondary); cursor: pointer; font-size: 0.85rem; }
+        
+        /* Year Selector */
+        .year-selector { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); border-radius: var(--radius-sm); color: white; }
+        .year-selector label { font-size: 0.8rem; font-weight: 500; }
+        .year-selector select { background: rgba(255,255,255,0.2); border: none; color: white; font-weight: 700; font-size: 1rem; padding: 2px 8px; border-radius: 4px; cursor: pointer; }
+        .year-selector select option { background: var(--bg-secondary); color: var(--text-primary); }
+        
+        /* Main Content */
+        .main-content { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        .page-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; }
+        .page-title { font-size: 1.5rem; font-weight: 700; }
+        .page-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+        .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+        
+        /* Cards */
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); margin-bottom: 1.5rem; }
+        .card-header { padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-weight: 600; }
+        .card-body { padding: 1rem; }
+        
+        /* Grid */
+        .grid { display: grid; gap: 1rem; }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-5 { grid-template-columns: repeat(5, 1fr); }
+        
+        /* Commission Card */
+        .commission-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); }
+        .commission-header { padding: 0.75rem 1rem; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .commission-name { font-weight: 600; }
+        .commission-body { padding: 0.75rem 1rem; }
+        
+        /* Member Item */
+        .member-item { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px dashed transparent; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; margin-bottom: 4px; }
+        .member-item:hover { background: var(--bg-tertiary); border-color: var(--accent-blue); }
+        .member-item.empty { border: 2px dashed var(--border-color); justify-content: center; color: var(--text-muted); min-height: 40px; }
+        .member-item.empty:hover { border-color: var(--accent-green); color: var(--accent-green); }
+        .member-role { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .member-role.coordenador { background: var(--text-primary); }
+        .member-role.adjunto { background: var(--accent-yellow); }
+        .member-role.membro { background: var(--text-muted); }
+        .member-name { flex: 1; font-size: 0.85rem; }
+        .member-group { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; }
+        .member-edit-icon { color: var(--text-muted); font-size: 0.8rem; opacity: 0; transition: opacity 0.2s; }
+        .member-item:hover .member-edit-icon { opacity: 1; }
+        
+        /* Badge */
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
+        .badge-blue { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
+        .badge-green { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+        .badge-yellow { background: rgba(245,158,11,0.15); color: var(--accent-yellow); }
+        .badge-red { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+        .badge-purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+        
+        /* Status */
+        .status { font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; }
+        .status.ok { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+        .status.error { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+        .status.pending { background: rgba(245,158,11,0.15); color: var(--accent-yellow); }
+        
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem; text-align: center; }
+        .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--accent-blue); }
+        .stat-label { font-size: 0.75rem; color: var(--text-secondary); }
+        
+        /* Legend */
+        .legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 10px 12px; background: var(--bg-tertiary); border-radius: var(--radius-sm); margin-bottom: 1.5rem; font-size: 0.8rem; color: var(--text-secondary); }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+        
+        /* Validation */
+        .validation-box { padding: 12px; border-radius: var(--radius-sm); margin-top: 1rem; font-size: 0.85rem; }
+        .validation-ok { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--accent-green); }
+        .validation-warning { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: var(--accent-yellow); }
+        .validation-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--accent-red); }
+        
+        /* Table */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-tertiary); font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); }
+        tr:hover td { background: var(--bg-tertiary); }
+        td { font-size: 0.85rem; }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.2s; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; margin: 1rem; }
+        .modal-header { padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-weight: 600; }
+        .modal-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem; }
+        .modal-body { padding: 1rem; }
+        .modal-footer { padding: 1rem; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 8px; }
+        
+        /* Person Selector */
+        .person-selector { max-height: 400px; overflow-y: auto; }
+        .person-option { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+        .person-option:hover { border-color: var(--accent-blue); background: rgba(59,130,246,0.05); }
+        .person-option.disabled { opacity: 0.5; cursor: not-allowed; background: var(--bg-tertiary); }
+        .person-info { flex: 1; }
+        .person-name { font-weight: 500; }
+        .person-details { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+        .person-reason { font-size: 0.75rem; color: var(--accent-red); margin-top: 4px; padding: 4px 8px; background: rgba(239,68,68,0.1); border-radius: 4px; }
+        .person-check { width: 24px; height: 24px; border: 2px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        
+        /* Project List */
+        .project-item { display: flex; align-items: center; justify-content: space-between; padding: 16px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-bottom: 12px; transition: all 0.2s; }
+        .project-item:hover { border-color: var(--accent-blue); background: rgba(59,130,246,0.05); }
+        .project-info { flex: 1; }
+        .project-name { font-weight: 600; font-size: 1rem; }
+        .project-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+        .project-actions { display: flex; gap: 8px; }
+        
+        /* Toast */
+        #toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; border-radius: var(--radius-sm); z-index: 2000; display: none; color: white; }
+        
+        /* Loading */
+        .loading-overlay { position: fixed; inset: 0; background: var(--bg-primary); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+        .spinner { width: 40px; height: 40px; border: 3px solid var(--border-color); border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .loading-text { margin-top: 1rem; color: var(--text-secondary); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Responsive */
+        @media (max-width: 900px) { 
+            .grid-5, .grid-3 { grid-template-columns: repeat(2, 1fr); } 
+            .navbar-inner { flex-wrap: wrap; height: auto; padding: 1rem 0; } 
+            .navbar-nav { width: 100%; justify-content: center; } 
+            .main-content { padding: 1rem; } 
+        }
+        @media (max-width: 600px) { 
+            .grid-5, .grid-3, .grid-2 { grid-template-columns: 1fr; } 
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loading-overlay"><div class="spinner"></div><div class="loading-text">Carregando...</div></div>
+
+    <!-- LOGIN -->
+    <div class="login-screen" id="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-logo">CF</div>
+                <h1 class="login-title">CONFEA</h1>
+                <p style="color:var(--text-muted);margin-top:0.5rem">Sistema de Composições</p>
+            </div>
+            <div class="login-card">
+                <div class="alert alert-error hidden" id="login-error"></div>
+                <div class="form-group"><label class="form-label">Usuário</label><input type="text" id="login-username" class="form-control" autofocus></div>
+                <div class="form-group"><label class="form-label">Senha</label><input type="password" id="login-password" class="form-control"></div>
+                <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Entrar</button>
+            </div>
+            <p style="text-align:center;margin-top:1rem;font-size:0.8rem;color:var(--text-muted)">Gerado em 21/01/2026 às 14:56</p>
+        </div>
+    </div>
+
+    <!-- APP -->
+    <div class="app-container hidden" id="app-container">
+        <nav class="navbar">
+            <div class="navbar-inner">
+                <div class="navbar-brand" onclick="showPage('composicoes')">
+                    <div class="navbar-logo">CF</div>
+                    <div class="navbar-title">CONFEA</div>
+                </div>
+                <div class="navbar-nav">
+                    <div class="year-selector">
+                        <label>📅 ANO:</label>
+                        <select id="ano-selector" onchange="onAnoChange()"></select>
+                    </div>
+                    <button class="nav-link active" id="nav-composicoes" onclick="showPage('composicoes')">Composições</button>
+                    <button class="nav-link" id="nav-outras" onclick="showPage('outras')">Outras</button>
+                    <button class="nav-link" id="nav-projetos" onclick="showPage('projetos')">📁 Projetos</button>
+                    <button class="nav-link hidden" id="nav-crud" onclick="showPage('crud')">⚙️ Dados</button>
+                    <button class="refresh-btn" onclick="refreshData()">🔄</button>
+                </div>
+                <div class="navbar-user">
+                    <span class="user-name" id="user-display-name"></span>
+                    <button class="btn-logout" onclick="doLogout()">Sair</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- PAGE: COMPOSIÇÕES -->
+        <main class="main-content" id="page-composicoes">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Composições <span id="ano-display" class="badge badge-purple"></span></h1>
+                    <p class="page-subtitle">Clique em uma posição para editar • <b id="disponiveis-count">0</b> conselheiros disponíveis no ano selecionado</p>
+                </div>
+                <div class="toolbar">
+                    <button class="btn btn-success btn-sm" onclick="openSaveModal()">💾 Salvar Composição</button>
+                </div>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background:var(--text-primary)"></div>Coordenador</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--accent-yellow)"></div>Adjunto</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--text-muted)"></div>Membro</div>
+                <div class="legend-item"><span class="badge badge-green">ENG</span></div>
+                <div class="legend-item"><span class="badge badge-blue">AGRO</span></div>
+            </div>
+            <div class="stats-grid" id="stats-composicoes"></div>
+            <div class="card"><div class="card-header"><h2 class="card-title">Conselho Diretor</h2></div><div class="card-body"><div class="grid grid-2" id="cd-container"></div></div></div>
+            <div class="card"><div class="card-header"><h2 class="card-title">Comissões Permanentes</h2><span class="badge" id="comissoes-status"></span></div><div class="card-body"><div class="grid grid-5" id="comissoes-container"></div><div id="validacoes-globais"></div></div></div>
+            <div class="card"><div class="card-header"><h2 class="card-title">CEF</h2></div><div class="card-body"><div class="grid grid-2" id="cef-container"></div></div></div>
+        </main>
+
+        <!-- PAGE: OUTRAS -->
+        <main class="main-content hidden" id="page-outras">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Outras Composições <span id="ano-display2" class="badge badge-purple"></span></h1>
+                    <p class="page-subtitle">Clique em uma posição para editar</p>
+                </div>
+                <div class="toolbar">
+                    <button class="btn btn-success btn-sm" onclick="openSaveModal()">💾 Salvar Composição</button>
+                </div>
+            </div>
+            <div id="outras-container"></div>
+        </main>
+
+        <!-- PAGE: PROJETOS -->
+        <main class="main-content hidden" id="page-projetos">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">📁 Projetos Salvos</h1>
+                    <p class="page-subtitle">Composições salvas por todos os usuários</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Lista de Projetos</h2>
+                    <span class="badge badge-blue" id="projetos-count">0</span>
+                </div>
+                <div class="card-body" id="projetos-list"></div>
+            </div>
+        </main>
+
+        <!-- PAGE: CRUD -->
+        <main class="main-content hidden" id="page-crud">
+            <div class="page-header"><h1 class="page-title">Gerenciamento de Conselheiros</h1><button class="btn btn-primary btn-sm" onclick="openCrudModal('add')">+ Novo</button></div>
+            <div class="card" style="margin-bottom:1rem"><div class="card-body">
+                <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:1rem">
+                    <input type="text" id="search-input" class="form-control" placeholder="Buscar..." oninput="filterTable()">
+                    <select id="filter-grupo" class="form-control" onchange="filterTable()"><option value="">Grupo</option><option>ELÉTRICA</option><option>CIVIL</option><option>AGRONOMIA</option><option>INDUSTRIAL</option></select>
+                    <select id="filter-tipo" class="form-control" onchange="filterTable()"><option value="">Tipo</option><option>TITULAR</option><option>SUPLENTE</option></select>
+                    <select id="filter-uf" class="form-control" onchange="filterTable()"></select>
+                </div>
+            </div></div>
+            <div class="stats-grid" id="stats-crud"></div>
+            <div class="card"><div class="card-header"><h2 class="card-title">Conselheiros</h2><span class="badge badge-blue" id="count-badge">0</span></div><div class="card-body" style="padding:0"><div class="table-container"><table><thead><tr><th>Nome</th><th>Nome Menor</th><th>UF</th><th>Grupo</th><th>Mandato</th><th>Tipo</th><th>Ações</th></tr></thead><tbody id="nomes-tbody"></tbody></table></div></div></div>
+        </main>
+    </div>
+
+    <!-- MODAL: SELEÇÃO DE PESSOA -->
+    <div class="modal-overlay" id="select-modal">
+        <div class="modal">
+            <div class="modal-header"><h3 class="modal-title" id="select-modal-title">Selecionar Pessoa</h3><button class="modal-close" onclick="closeSelectModal()">×</button></div>
+            <div class="modal-body">
+                <div class="alert alert-warning" style="margin-bottom:1rem">📅 Mostrando apenas conselheiros com mandato válido em <b id="ano-modal"></b></div>
+                <input type="text" id="search-person" class="form-control" placeholder="Buscar conselheiro..." oninput="renderPersonList()" style="margin-bottom:1rem">
+                <div class="person-selector" id="person-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="clearPosition()">Limpar Posição</button>
+                <button class="btn btn-secondary" onclick="closeSelectModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SALVAR PROJETO -->
+    <div class="modal-overlay" id="save-modal">
+        <div class="modal" style="max-width:450px">
+            <div class="modal-header"><h3 class="modal-title">💾 Salvar Composição</h3><button class="modal-close" onclick="closeSaveModal()">×</button></div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Nome do Projeto</label>
+                    <input type="text" id="save-nome" class="form-control" placeholder="Ex: Proposta Inicial 2026">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ano</label>
+                    <input type="text" id="save-ano" class="form-control" readonly>
+                </div>
+                <div class="alert alert-error hidden" id="save-error"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeSaveModal()">Cancelar</button>
+                <button class="btn btn-success" onclick="salvarProjeto()">💾 Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIRMAR SOBRESCREVER -->
+    <div class="modal-overlay" id="overwrite-modal">
+        <div class="modal" style="max-width:400px">
+            <div class="modal-header"><h3 class="modal-title">⚠️ Projeto já existe</h3><button class="modal-close" onclick="closeOverwriteModal()">×</button></div>
+            <div class="modal-body">
+                <p>Já existe um projeto com este nome para o ano selecionado.</p>
+                <p style="margin-top:1rem;font-weight:600;color:var(--accent-yellow)">Deseja sobrescrever os dados existentes?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeOverwriteModal()">Cancelar</button>
+                <button class="btn btn-danger" onclick="confirmarSobrescrever()">Sobrescrever</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CRUD -->
+    <div class="modal-overlay" id="crud-modal">
+        <div class="modal">
+            <div class="modal-header"><h3 class="modal-title" id="crud-modal-title">Novo</h3><button class="modal-close" onclick="closeCrudModal()">×</button></div>
+            <div class="modal-body">
+                <input type="hidden" id="form-row">
+                <div class="grid grid-2"><div class="form-group"><label class="form-label">Nome</label><input type="text" id="form-nome" class="form-control"></div><div class="form-group"><label class="form-label">Nome Menor</label><input type="text" id="form-nome-menor" class="form-control"></div></div>
+                <div class="grid grid-3"><div class="form-group"><label class="form-label">UF</label><select id="form-uf" class="form-control"><option value="">-</option><option>AC</option><option>AL</option><option>AM</option><option>AP</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MG</option><option>MS</option><option>MT</option><option>PA</option><option>PB</option><option>PE</option><option>PI</option><option>PR</option><option>RJ</option><option>RN</option><option>RO</option><option>RR</option><option>RS</option><option>SC</option><option>SE</option><option>SP</option><option>TO</option></select></div><div class="form-group"><label class="form-label">Grupo</label><select id="form-grupo" class="form-control" onchange="updateGrupo2()"><option value="">-</option><option>ELÉTRICA</option><option>CIVIL</option><option>AGRONOMIA</option><option>INDUSTRIAL</option><option>IES - AGRO</option><option>IES - CIVIL</option></select></div><div class="form-group"><label class="form-label">Grupo2</label><input type="text" id="form-grupo2" class="form-control" readonly></div></div>
+                <div class="form-group"><label class="form-label">Tipo</label><select id="form-tipo" class="form-control"><option value="">-</option><option>TITULAR</option><option>SUPLENTE</option><option>SUPLENTE - EXERC</option></select></div>
+                <div class="grid grid-2"><div class="form-group"><label class="form-label">Início Mandato</label><input type="date" id="form-inicio" class="form-control"></div><div class="form-group"><label class="form-label">Término Mandato</label><input type="date" id="form-termino" class="form-control"></div></div>
+                <div class="grid grid-3"><div class="form-group"><label class="form-label">CCSS 2025</label><select id="form-ccss2025" class="form-control"><option>NÃO</option><option>SIM</option></select></div><div class="form-group"><label class="form-label">CD 2025</label><select id="form-cd2025" class="form-control"><option>NÃO</option><option>SIM</option></select></div><div class="form-group"><label class="form-label">Exercício 2026</label><select id="form-exercicio2026" class="form-control"><option>SIM</option><option>NÃO</option></select></div></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeCrudModal()">Cancelar</button><button class="btn btn-primary" onclick="saveCrudForm()">Salvar</button></div>
+        </div>
+    </div>
+
+    <!-- MODAL: DELETE -->
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal" style="max-width:350px">
+            <div class="modal-header"><h3 class="modal-title">Excluir?</h3><button class="modal-close" onclick="closeDeleteModal()">×</button></div>
+            <div class="modal-body"><p id="delete-nome" style="font-weight:600"></p></div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeDeleteModal()">Cancelar</button><button class="btn btn-danger" onclick="executeDelete()">Excluir</button></div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDsNd9IBmQSeQGyKaK0M0wYeMst1qvWKhebvcPghtUkPqG9OpWvoFdQnKfkpnjPiWn/exec';
+const USERS = [{"username": "Borsato", "password": "435e3e8ae638f320b5ed4bf8d8ce17da34a518263bcfc310f5f99dbd776c5455", "role": "admin"}, {"username": "Marchese", "password": "c6d0050ac1b9a149e0472ecdb03401f7d0a191e977e726db0cd1a71c641fc5bf", "role": "viewer"}];
+let currentUser = null;
+let appData = { nomes: [], composicoes: {}, outras: {}, anosDisponiveis: [], projetos: [] };
+let selectedAno = null;
+let currentPosicao = null;
+let crudMode = 'add';
+let deleteRow = null;
+let pendingSave = null;
+
+// ==================== AUTH ====================
+async function sha256(msg) { const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg)); return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join(''); }
+
+async function doLogin() {
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+    const err = document.getElementById('login-error');
+    if (!username || !password) { err.textContent = 'Preencha os campos'; err.classList.remove('hidden'); return; }
+    const hash = await sha256(password);
+    const user = USERS.find(u => u.username === username && u.password === hash);
+    if (user) {
+        currentUser = user; err.classList.add('hidden');
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('app-container').classList.remove('hidden');
+        document.getElementById('user-display-name').textContent = user.username;
+        if (user.role === 'admin') document.getElementById('nav-crud').classList.remove('hidden');
+        loadData();
+    } else { err.textContent = 'Usuário ou senha inválidos'; err.classList.remove('hidden'); }
+}
+
+function doLogout() {
+    currentUser = null;
+    document.getElementById('app-container').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('login-password').value = '';
+    document.getElementById('nav-crud').classList.add('hidden');
+}
+
+document.getElementById('login-password').addEventListener('keypress', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('login-username').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('login-password').focus(); });
+
+// ==================== DATA ====================
+async function loadData() {
+    showLoading(true);
+    try {
+        if (!APPS_SCRIPT_URL) throw new Error('URL não configurada');
+        const res = await fetch(APPS_SCRIPT_URL, { method: 'GET', redirect: 'follow' });
+        const data = await res.json();
+        if (data.success) {
+            appData = data;
+            populateAnoSelector();
+            renderAll();
+        } else throw new Error(data.error);
+    } catch (e) { showToast('Erro: ' + e.message, 'error'); }
+    showLoading(false);
+}
+
+async function refreshData() { await loadData(); showToast('Atualizado!', 'success'); }
+function showLoading(show) { document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none'; }
+
+function showPage(page) {
+    ['composicoes','outras','projetos','crud'].forEach(p => {
+        document.getElementById('page-'+p)?.classList.add('hidden');
+        document.getElementById('nav-'+p)?.classList.remove('active');
+    });
+    document.getElementById('page-'+page)?.classList.remove('hidden');
+    document.getElementById('nav-'+page)?.classList.add('active');
+    if (page === 'projetos') renderProjetosList();
+}
+
+// ==================== ANO SELECTOR ====================
+function populateAnoSelector() {
+    const sel = document.getElementById('ano-selector');
+    const anos = appData.anosDisponiveis || [];
+    const currentYear = new Date().getFullYear();
+    
+    sel.innerHTML = anos.map(a => `<option value="${a}">${a}</option>`).join('');
+    
+    // Selecionar ano atual ou o mais recente
+    if (anos.includes(currentYear)) {
+        selectedAno = currentYear;
+    } else if (anos.length > 0) {
+        selectedAno = anos[anos.length - 1];
+    }
+    
+    sel.value = selectedAno;
+    updateAnoDisplay();
+}
+
+function onAnoChange() {
+    selectedAno = parseInt(document.getElementById('ano-selector').value);
+    updateAnoDisplay();
+    renderAll();
+}
+
+function updateAnoDisplay() {
+    document.getElementById('ano-display').textContent = selectedAno;
+    document.getElementById('ano-display2').textContent = selectedAno;
+    document.getElementById('ano-modal').textContent = selectedAno;
+    document.getElementById('save-ano').value = selectedAno;
+    document.getElementById('disponiveis-count').textContent = getPessoasDisponiveis().length;
+}
+
+// ==================== FILTRO POR ANO ====================
+function getPessoasDisponiveis() {
+    if (!selectedAno) return appData.nomes || [];
+    return (appData.nomes || []).filter(p => {
+        const inicio = p.ano_inicio;
+        const termino = p.ano_termino;
+        if (!inicio || !termino) return false;
+        return selectedAno >= inicio && selectedAno <= termino;
+    });
+}
+
+// ==================== HELPERS ====================
+function getPessoa(nomeMenor) { return appData.nomes.find(n => n.nome_menor === nomeMenor); }
+function getGrupo(nomeMenor) { const p = getPessoa(nomeMenor); return p ? p.grupo2 : ''; }
+
+function getAllMembrosComissoes() {
+    const c = appData.composicoes;
+    if (!c || !c.comissoes_permanentes) return [];
+    const membros = [];
+    Object.entries(c.comissoes_permanentes).forEach(([com, data]) => {
+        if (data.coordenador) membros.push({ nome: data.coordenador, comissao: com, cargo: 'coordenador' });
+        if (data.adjunto) membros.push({ nome: data.adjunto, comissao: com, cargo: 'adjunto' });
+        (data.membros || []).forEach(m => membros.push({ nome: m, comissao: com, cargo: 'membro' }));
+    });
+    return membros;
+}
+
+function getMembrosCd() {
+    const c = appData.composicoes;
+    if (!c) return [];
+    const membros = [];
+    if (c.vice_presidente) membros.push(c.vice_presidente);
+    (c.diretores || []).forEach(d => membros.push(d));
+    return membros;
+}
+
+// ==================== VALIDAÇÕES ====================
+function validarPessoa(nomeMenor, posicao) {
+    const pessoa = getPessoa(nomeMenor);
+    if (!pessoa) return { disponivel: false, motivo: 'Pessoa não encontrada' };
+    
+    const membrosComissoes = getAllMembrosComissoes();
+    const membrosCd = getMembrosCd();
+    const parts = posicao.split('_');
+    const tipo = parts[0];
+    
+    const isOutras = ['outras', 'cme', 'ccm', 'prodesu', 'mulher', 'consoea'].includes(tipo);
+    
+    const jaEmComissao = membrosComissoes.find(m => m.nome === nomeMenor);
+    if (jaEmComissao && !isOutras && tipo !== 'cef' && tipo !== 'vice' && tipo !== 'diretor') {
+        const comissaoDestino = parts[0];
+        if (jaEmComissao.comissao !== comissaoDestino) {
+            return { disponivel: false, motivo: `Já compõe a ${jaEmComissao.comissao} como ${jaEmComissao.cargo}` };
+        }
+    }
+    
+    if (parts[0] === 'CCSS') {
+        if (membrosCd.includes(nomeMenor)) return { disponivel: false, motivo: 'Está no Conselho Diretor' };
+        if (pessoa.cd_2025 === 'SIM') return { disponivel: false, motivo: 'Foi diretor em 2025 (impedido)' };
+    }
+    
+    const cargo = parts.length > 1 ? parts[1] : '';
+    if ((cargo === 'coordenador' || cargo === 'adjunto') && membrosCd.includes(nomeMenor) && !isOutras) {
+        return { disponivel: false, motivo: 'Membro do CD não pode ser coordenador/adjunto' };
+    }
+    
+    return { disponivel: true, motivo: '' };
+}
+
+// ==================== RENDER ====================
+function renderAll() { renderComposicoes(); renderOutras(); renderCrud(); }
+
+function renderComposicoes() {
+    const c = appData.composicoes;
+    if (!c || !c.comissoes_permanentes) return;
+    
+    let totalMembros = 0;
+    Object.values(c.comissoes_permanentes).forEach(x => { if(x.coordenador) totalMembros++; if(x.adjunto) totalMembros++; totalMembros += (x.membros||[]).length; });
+    
+    document.getElementById('stats-composicoes').innerHTML = `
+        <div class="stat-card"><div class="stat-value">${totalMembros}</div><div class="stat-label">Membros Comissões</div></div>
+        <div class="stat-card"><div class="stat-value">5</div><div class="stat-label">Comissões</div></div>
+        <div class="stat-card"><div class="stat-value">${c.diretores?.length||0}</div><div class="stat-label">Diretores</div></div>
+        <div class="stat-card"><div class="stat-value">${getPessoasDisponiveis().length}</div><div class="stat-label">Disponíveis ${selectedAno}</div></div>
+    `;
+    
+    document.getElementById('cd-container').innerHTML = `
+        <div class="commission-card"><div class="commission-header"><div class="commission-name">Vice-Presidente</div></div><div class="commission-body">${renderMemberItem(c.vice_presidente, 'vice_presidente', 'coordenador')}</div></div>
+        <div class="commission-card"><div class="commission-header"><div class="commission-name">Diretores</div></div><div class="commission-body">${[0,1,2,3,4].map(i => renderMemberItem(c.diretores?.[i], `diretor_${i+1}`, 'membro')).join('')}</div></div>
+    `;
+    
+    let pendencias = 0;
+    const validacoes = [];
+    
+    document.getElementById('comissoes-container').innerHTML = Object.entries(c.comissoes_permanentes).map(([nome, data]) => {
+        const membros = []; if (data.coordenador) membros.push(data.coordenador); if (data.adjunto) membros.push(data.adjunto); (data.membros || []).forEach(m => membros.push(m));
+        let st = 'ok', stxt = '✓'; if (membros.length < 3) { st = 'error'; stxt = '✗'; pendencias++; }
+        if ((nome === 'CEAP' || nome === 'CEEP') && membros.length >= 3) { const grupos = membros.map(m => getGrupo(m)); if (!grupos.includes('AGRO') || !grupos.includes('ENG')) { st = 'pending'; stxt = '⚠'; validacoes.push(`${nome} deve ter AGRO e ENG`); } }
+        return `<div class="commission-card"><div class="commission-header"><div class="commission-name">${nome}</div><span class="status ${st}">${stxt}</span></div><div class="commission-body">${renderMemberItem(data.coordenador, `${nome}_coordenador`, 'coordenador')}${renderMemberItem(data.adjunto, `${nome}_adjunto`, 'adjunto')}${[0,1].map(i => renderMemberItem(data.membros?.[i], `${nome}_membro_${i+1}`, 'membro')).join('')}</div></div>`;
+    }).join('');
+    
+    document.getElementById('comissoes-status').textContent = pendencias === 0 ? '✓ OK' : `${pendencias} pendência(s)`;
+    document.getElementById('comissoes-status').className = 'badge ' + (pendencias === 0 ? 'badge-green' : 'badge-yellow');
+    
+    let validHtml = totalMembros < 18 ? `<div class="validation-box validation-warning">⚠ Falta ${18 - totalMembros} membro(s) para o mínimo de 18</div>` : `<div class="validation-box validation-ok">✓ Comissões completas (${totalMembros} membros)</div>`;
+    validacoes.forEach(v => { validHtml += `<div class="validation-box validation-error">✗ ${v}</div>`; });
+    document.getElementById('validacoes-globais').innerHTML = validHtml;
+    
+    document.getElementById('cef-container').innerHTML = `
+        <div><h4 style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem">TITULARES</h4>${[0,1,2,3,4].map(i => renderMemberItem(c.cef_titulares?.[i], `cef_titular_${i+1}`, 'membro')).join('')}</div>
+        <div><h4 style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem">SUPLENTES</h4>${[0,1,2,3,4,5].map(i => renderMemberItem(c.cef_suplentes?.[i], `cef_suplente_${i+1}`, 'membro')).join('')}</div>
+    `;
+}
+
+function renderMemberItem(nome, posicao, role) {
+    const grupo = nome ? getGrupo(nome) : '';
+    const grupoClass = grupo === 'AGRO' ? 'badge-blue' : 'badge-green';
+    if (!nome) return `<div class="member-item empty" onclick="openSelectModal('${posicao}')">+ Adicionar</div>`;
+    return `<div class="member-item" onclick="openSelectModal('${posicao}')"><div class="member-role ${role}"></div><span class="member-name">${nome}</span><span class="badge ${grupoClass}">${grupo || '-'}</span><span class="member-edit-icon">✏️</span></div>`;
+}
+
+function renderOutras() {
+    const o = appData.outras;
+    if (!o) return;
+    document.getElementById('outras-container').innerHTML = `
+        <div class="card"><div class="card-header"><h2 class="card-title">Vice e Diretores</h2></div><div class="card-body"><div class="grid grid-2">
+            <div><h4 style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem">VICE</h4>${renderMemberItem(o.vice, 'outras_vice', 'coordenador')}</div>
+            <div><h4 style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem">DIRETORES</h4>${[0,1,2,3,4].map(i => { const d = o.cd_diretorias?.[i]; const cargos = ['ADM', 'PLAN', 'CTRL', 'INST', 'FIN']; return `<div class="member-item" onclick="openSelectModal('outras_diretor_${i+1}')"><div class="member-role membro"></div><span class="member-name">${d?.nome || '+ Adicionar'}</span><span class="badge badge-yellow">${cargos[i]}</span></div>`; }).join('')}</div>
+        </div></div></div>
+        <div class="grid grid-2" style="margin-bottom:1rem">
+            <div class="card"><div class="card-header"><h2 class="card-title">CME</h2></div><div class="card-body">${[0,1,2,3,4,5].map(i => renderMemberItem(o.cme?.[i], `cme_membro_${i+1}`, i === 0 ? 'coordenador' : 'membro')).join('')}</div></div>
+            <div class="card"><div class="card-header"><h2 class="card-title">CCM</h2></div><div class="card-body">${renderMemberItem(o.ccm?.presidente, 'ccm_presidente', 'coordenador')}${[0,1,2,3,4].map(i => renderMemberItem(o.ccm?.membros?.[i], `ccm_membro_${i+1}`, 'membro')).join('')}</div></div>
+        </div>
+        <div class="grid grid-3">
+            <div class="card"><div class="card-header"><h2 class="card-title">Novo PRODESU</h2></div><div class="card-body">${renderMemberItem(o.novo_prodesu?.presidente, 'prodesu_presidente', 'coordenador')}${[0,1,2,3,4,5,6].map(i => renderMemberItem(o.novo_prodesu?.membros?.[i], `prodesu_membro_${i+1}`, 'membro')).join('')}</div></div>
+            <div class="card"><div class="card-header"><h2 class="card-title">Programa Mulher</h2></div><div class="card-body">${renderMemberItem(o.programa_mulher?.presidente, 'mulher_presidente', 'coordenador')}${[0,1,2,3,4,5,6].map(i => renderMemberItem(o.programa_mulher?.membros?.[i], `mulher_membro_${i+1}`, 'membro')).join('')}</div></div>
+            <div class="card"><div class="card-header"><h2 class="card-title">CONSOEA</h2></div><div class="card-body">${renderMemberItem(o.consoea?.presidente, 'consoea_presidente', 'coordenador')}${[0,1,2,3,4,5,6].map(i => renderMemberItem(o.consoea?.membros?.[i], `consoea_membro_${i+1}`, 'membro')).join('')}</div></div>
+        </div>
+    `;
+}
+
+function renderCrud() {
+    const n = appData.nomes || [];
+    const disponiveis = getPessoasDisponiveis().length;
+    document.getElementById('stats-crud').innerHTML = `<div class="stat-card"><div class="stat-value">${n.length}</div><div class="stat-label">Total</div></div><div class="stat-card"><div class="stat-value">${n.filter(x=>x.tipo==='TITULAR').length}</div><div class="stat-label">Titulares</div></div><div class="stat-card"><div class="stat-value">${disponiveis}</div><div class="stat-label">Em ${selectedAno}</div></div>`;
+    const ufs = [...new Set(n.map(x=>x.uf).filter(x=>x))].sort();
+    document.getElementById('filter-uf').innerHTML = '<option value="">UF</option>'+ufs.map(u=>`<option>${u}</option>`).join('');
+    document.getElementById('nomes-tbody').innerHTML = n.map(x=>`<tr data-row="${x.row}" data-nome="${x.nome}" data-grupo="${x.grupo}" data-tipo="${x.tipo}" data-uf="${x.uf}"><td>${x.nome}</td><td><b>${x.nome_menor}</b></td><td>${x.uf}</td><td><span class="badge ${x.grupo2==='ENG'?'badge-green':'badge-blue'}">${x.grupo}</span></td><td style="font-size:0.75rem">${x.ano_inicio||'-'} - ${x.ano_termino||'-'}</td><td>${x.tipo}</td><td><button class="btn btn-secondary btn-sm" onclick='openCrudModal("edit",${JSON.stringify(x)})'>✏️</button> <button class="btn btn-danger btn-sm" onclick="confirmDelete(${x.row},'${x.nome.replace(/'/g,"\\'")}')">🗑️</button></td></tr>`).join('');
+    document.getElementById('count-badge').textContent = n.length;
+}
+
+function filterTable() {
+    const s = document.getElementById('search-input').value.toLowerCase();
+    const g = document.getElementById('filter-grupo').value;
+    const t = document.getElementById('filter-tipo').value;
+    const u = document.getElementById('filter-uf').value;
+    let c = 0;
+    document.querySelectorAll('#nomes-tbody tr').forEach(r => { const ok = (r.dataset.nome||'').toLowerCase().includes(s) && (!g||r.dataset.grupo===g) && (!t||r.dataset.tipo===t) && (!u||r.dataset.uf===u); r.style.display = ok ? '' : 'none'; if (ok) c++; });
+    document.getElementById('count-badge').textContent = c;
+}
+
+// ==================== PROJETOS ====================
+function renderProjetosList() {
+    const projetos = appData.projetos || [];
+    document.getElementById('projetos-count').textContent = projetos.length;
+    
+    if (projetos.length === 0) {
+        document.getElementById('projetos-list').innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem">Nenhum projeto salvo ainda</p>';
+        return;
+    }
+    
+    document.getElementById('projetos-list').innerHTML = projetos.map(p => `
+        <div class="project-item">
+            <div class="project-info">
+                <div class="project-name">${p.nome} <span class="badge badge-purple">${p.ano}</span></div>
+                <div class="project-meta">Por: <b>${p.usuario}</b> • ${new Date(p.data_criacao).toLocaleString('pt-BR')}</div>
+            </div>
+            <div class="project-actions">
+                <button class="btn btn-primary btn-sm" onclick="carregarProjeto(${p.id})">📂 Carregar</button>
+                <button class="btn btn-danger btn-sm" onclick="deletarProjeto(${p.id},'${p.nome.replace(/'/g,"\\'")}')">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function openSaveModal() {
+    document.getElementById('save-nome').value = '';
+    document.getElementById('save-ano').value = selectedAno;
+    document.getElementById('save-error').classList.add('hidden');
+    document.getElementById('save-modal').classList.add('active');
+}
+
+function closeSaveModal() { document.getElementById('save-modal').classList.remove('active'); }
+function closeOverwriteModal() { document.getElementById('overwrite-modal').classList.remove('active'); pendingSave = null; }
+
+async function salvarProjeto() {
+    const nome = document.getElementById('save-nome').value.trim();
+    const err = document.getElementById('save-error');
+    
+    if (!nome) { err.textContent = 'Digite um nome para o projeto'; err.classList.remove('hidden'); return; }
+    
+    const dados = {
+        action: 'salvarProjeto',
+        nome: nome,
+        ano: selectedAno,
+        usuario: currentUser.username,
+        dados: {
+            composicoes: appData.composicoes,
+            outras: appData.outras
+        },
+        sobrescrever: false
+    };
+    
+    try {
+        const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify(dados) });
+        const result = await res.json();
+        
+        if (result.error === 'EXISTE') {
+            pendingSave = dados;
+            closeSaveModal();
+            document.getElementById('overwrite-modal').classList.add('active');
+        } else if (result.success) {
+            showToast(result.message, 'success');
+            closeSaveModal();
+            refreshData();
+        } else {
+            throw new Error(result.error);
+        }
+    } catch (e) { showToast('Erro: ' + e.message, 'error'); }
+}
+
+async function confirmarSobrescrever() {
+    if (!pendingSave) return;
+    pendingSave.sobrescrever = true;
+    
+    try {
+        const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify(pendingSave) });
+        const result = await res.json();
+        
+        if (result.success) {
+            showToast(result.message, 'success');
+            closeOverwriteModal();
+            refreshData();
+        } else {
+            throw new Error(result.error);
+        }
+    } catch (e) { showToast('Erro: ' + e.message, 'error'); }
+}
+
+async function carregarProjeto(id) {
+    try {
+        const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify({ action: 'carregarProjeto', id: id }) });
+        const result = await res.json();
+        
+        if (result.success) {
+            appData.composicoes = result.projeto.dados.composicoes || {};
+            appData.outras = result.projeto.dados.outras || {};
+            selectedAno = result.projeto.ano;
+            document.getElementById('ano-selector').value = selectedAno;
+            updateAnoDisplay();
+            renderAll();
+            showPage('composicoes');
+            showToast(`Projeto "${result.projeto.nome}" carregado!`, 'success');
+        } else {
+            throw new Error(result.error);
+        }
+    } catch (e) { showToast('Erro: ' + e.message, 'error'); }
+}
+
+async function deletarProjeto(id, nome) {
+    if (!confirm(`Excluir projeto "${nome}"?`)) return;
+    
+    try {
+        const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify({ action: 'deletarProjeto', id: id }) });
+        const result = await res.json();
+        
+        if (result.success) {
+            showToast(result.message, 'success');
+            refreshData();
+        } else {
+            throw new Error(result.error);
+        }
+    } catch (e) { showToast('Erro: ' + e.message, 'error'); }
+}
+
+// ==================== MODAL SELEÇÃO ====================
+function openSelectModal(posicao) {
+    currentPosicao = posicao;
+    const parts = posicao.split('_');
+    let titulo = parts.join(' ').toUpperCase();
+    document.getElementById('select-modal-title').textContent = titulo;
+    document.getElementById('search-person').value = '';
+    renderPersonList();
+    document.getElementById('select-modal').classList.add('active');
+}
+
+function closeSelectModal() { document.getElementById('select-modal').classList.remove('active'); currentPosicao = null; }
+
+function renderPersonList() {
+    const search = document.getElementById('search-person').value.toLowerCase();
+    const pessoas = getPessoasDisponiveis(); // Filtrado pelo ano selecionado
+    
+    const html = pessoas.filter(p => p.nome.toLowerCase().includes(search) || p.nome_menor.toLowerCase().includes(search)).map(p => {
+        const validacao = validarPessoa(p.nome_menor, currentPosicao);
+        const grupoClass = p.grupo2 === 'AGRO' ? 'badge-blue' : 'badge-green';
+        return `<div class="person-option ${validacao.disponivel ? '' : 'disabled'}" onclick="${validacao.disponivel ? `selectPerson('${p.nome_menor}')` : ''}"><div class="person-info"><div class="person-name">${p.nome_menor}</div><div class="person-details">${p.nome} • ${p.uf} • <span class="badge ${grupoClass}">${p.grupo2}</span> • ${p.ano_inicio}-${p.ano_termino}</div>${!validacao.disponivel ? `<div class="person-reason">❌ ${validacao.motivo}</div>` : ''}</div><div class="person-check">${validacao.disponivel ? '' : '✗'}</div></div>`;
+    }).join('');
+    
+    document.getElementById('person-list').innerHTML = html || `<p style="text-align:center;color:var(--text-muted)">Nenhum conselheiro com mandato em ${selectedAno}</p>`;
+}
+
+async function selectPerson(nomeMenor) {
+    if (!currentPosicao) return;
+    try {
+        await fetch(APPS_SCRIPT_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify({ action: 'updateComposicao', posicao: currentPosicao, nome: nomeMenor }) });
+        showToast('Atualizado!', 'success'); closeSelectModal(); setTimeout(() => refreshData(), 500);
+    } catch (e) { showToast('Erro: ' + e.message, 'error'); }
+}
+
+async function clearPosition() {
+    if (!currentPosicao) return;
+    try {
+        await fetch(APPS_SCRIPT_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify({ action: 'updateComposicao', posicao: currentPosicao, nome: '' }) });
+        showToast('Limpo!', 'success'); closeSelectModal(); setTimeout(() => refreshData(), 500);
+    } catch (e) { showToast('Erro: ' + e.message, 'error'); }
+}
+
+// ==================== CRUD ====================
+function openCrudModal(mode, data=null) {
+    crudMode = mode;
+    document.getElementById('crud-modal-title').textContent = mode === 'add' ? 'Novo Conselheiro' : 'Editar Conselheiro';
+    if (mode === 'add') { ['form-row','form-nome','form-nome-menor','form-uf','form-grupo','form-grupo2','form-tipo','form-inicio','form-termino'].forEach(id=>document.getElementById(id).value=''); document.getElementById('form-ccss2025').value='NÃO'; document.getElementById('form-cd2025').value='NÃO'; document.getElementById('form-exercicio2026').value='SIM'; }
+    else { document.getElementById('form-row').value=data.row; document.getElementById('form-nome').value=data.nome||''; document.getElementById('form-nome-menor').value=data.nome_menor||''; document.getElementById('form-uf').value=data.uf||''; document.getElementById('form-grupo').value=data.grupo||''; document.getElementById('form-grupo2').value=data.grupo2||''; document.getElementById('form-tipo').value=data.tipo||''; document.getElementById('form-inicio').value=data.inicio_mandato||''; document.getElementById('form-termino').value=data.termino_mandato||''; document.getElementById('form-ccss2025').value=data.ccss_2025||'NÃO'; document.getElementById('form-cd2025').value=data.cd_2025||'NÃO'; document.getElementById('form-exercicio2026').value=data.exercicio_2026||'SIM'; }
+    document.getElementById('crud-modal').classList.add('active');
+}
+
+function closeCrudModal() { document.getElementById('crud-modal').classList.remove('active'); }
+function updateGrupo2() { const g = document.getElementById('form-grupo').value; document.getElementById('form-grupo2').value = ['AGRONOMIA','IES - AGRO'].includes(g)?'AGRO':(g?'ENG':''); }
+
+async function saveCrudForm() {
+    const data = { action: crudMode === 'add' ? 'addNome' : 'updateNome', row: document.getElementById('form-row').value, nome: document.getElementById('form-nome').value, nome_menor: document.getElementById('form-nome-menor').value, uf: document.getElementById('form-uf').value, grupo: document.getElementById('form-grupo').value, grupo2: document.getElementById('form-grupo2').value, tipo: document.getElementById('form-tipo').value, inicio_mandato: document.getElementById('form-inicio').value, termino_mandato: document.getElementById('form-termino').value, ccss_2025: document.getElementById('form-ccss2025').value, cd_2025: document.getElementById('form-cd2025').value, exercicio_2026: document.getElementById('form-exercicio2026').value };
+    try { await fetch(APPS_SCRIPT_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify(data) }); showToast('Salvo!', 'success'); closeCrudModal(); setTimeout(()=>refreshData(), 500); } catch (e) { showToast('Erro: '+e.message,'error'); }
+}
+
+function confirmDelete(row, nome) { deleteRow = row; document.getElementById('delete-nome').textContent = nome; document.getElementById('delete-modal').classList.add('active'); }
+function closeDeleteModal() { document.getElementById('delete-modal').classList.remove('active'); deleteRow = null; }
+async function executeDelete() { if (!deleteRow) return; try { await fetch(APPS_SCRIPT_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify({ action: 'deleteNome', row: deleteRow }) }); showToast('Excluído!', 'success'); closeDeleteModal(); setTimeout(()=>refreshData(), 500); } catch (e) { showToast('Erro: '+e.message,'error'); } }
+
+function showToast(msg, type='success') { const t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; t.style.background = type === 'success' ? 'var(--accent-green)' : 'var(--accent-red)'; setTimeout(() => t.style.display = 'none', 3000); }
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSelectModal(); closeSaveModal(); closeOverwriteModal(); closeCrudModal(); closeDeleteModal(); } });
+showLoading(false);
+</script>
+</body>
+</html>
